@@ -1,0 +1,36 @@
+Derek O'Brien
+dmo294@nyu.edu
+Data Communications & Networks - Fall 2017
+Programming Assignment #1 MultiThreadedServer
+Written in Java (1.8.0_144)
+
+Getting Started:
+Run script 'run.sh' from MultiThreadedServer directory to compile and start server.
+
+Server will run on localhost:8081 by default. You can then submit GET and POST requests
+and get simple responses in return.
+
+Example:
+
+curl -i -X GET http://localhost:8081
+curl -i -H "Content-Type: application/json" -d "Your Payload Here" -X POST http://localhost:8081
+
+When accessing the site via browser, you'll be able to take advantage of cookies and caching. After the browser cache has experied, users visiting the site again (while the server is still running as cookies do not use persistent storage) will receive a different message if their cookie is still valid.
+
+Program Report:
+I opted to implement a MultiThreadedServer from the socket level up. To start, we initialize a Server object and open its ServerSocket. The ServerSocket listens for requests from client Sockets and, once a request is accepted, a Worker Thread is allocated to process the request. As this is a web server, the natural protocol to implement is HTTP. This basic server can accommodate GET/POST requests, but can easily be expanded upon to support other methods.
+
+The RequestHandler initialized in the new thread is responsible for creating the Request/Response objects. This requires parsing the socket InputStream to obtain the request type from the headers and, if necessary, reading in the x bits of any payload present in a POST request.
+
+Once the incoming request has been successfully parsed, a Response object is formed based on the specific request type. Typically the requested resource is returned, but at present, this simple implementation returns only text. In the event of a POST request, the payload (if any) is also returned with the default response message.
+
+Enhancements:
+I've overloaded my server constructor so that the exact nature of the multi-threading can vary as dictated by the user's needs. At present, the default, zero-param constructor will create a Server a cached ThreadPool. This allows the Server to reuse threads once they are returned to the pool, but also create new Threads as needed if none are presently available. This means that the server will always be able to spin up a thread to handle incoming requests resulting less latency from the user perspective. However, should the server experience a heavy barrage of requests, threads will continute to spin up without any limit. This may ultimately slow down responsiveness as the CPU is overloaded trying to handle all of these new threads.
+
+In this case, we allow for the creation of a fixed ThreadPool that sets a cap to the number of threads that can be simultaneously executing. By setting this cap, we avoid the potential CPU-intensive processing of the unbounded cahed thread pool, but also impose a natural limit such that additional requests will be queued until a thread becomes available. If the user can reasonable predict the expected traffic and set the number of threads accordingly to avoid excessive queueing, then this could be an efficient option.
+
+I've also implemented a simple CookieHandler that will create a new cookie via the Set-Cookie header, which includes a unique sessionID, date of lastVisit, and expiration date (currently set to 1 day). When a user obtains this cookie and visits the site again, we check our Cookie Storage via sessionID and return a new result based on whether or not the user has visited the site. This does, however, require accessing the server again and not viewing cached content (more on this below).
+
+This simple implementation uses non-persistent storage and only determines if a user has previousy visited, but this same idea could be expanded to extend the security of our server. Authentication tokens can be sent/received and used to identify valid users and provide access to secure content using a similar approach to the simple functionality present here.
+
+Finally, I've added some simple "Cache-Control" to responses so that pages may be served from the browser cache for up to x seconds (currently set to just 10 seconds). This allows us to reduce the request load on our server by allowing the browser to handle requests for which it has already received the response. It simply caches those responses for as long as is designated in the "Cache-Content" header.
