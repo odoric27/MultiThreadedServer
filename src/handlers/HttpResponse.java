@@ -1,7 +1,6 @@
 package handlers;
 
 import java.util.ArrayList;
-import java.util.UUID;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -9,7 +8,6 @@ import java.io.OutputStream;
 public class HttpResponse {
 	private final String VERSION = "HTTP/1.1";
 	private final String CRLF = "\r\n";
-	private StringBuilder response;
 	private ArrayList<String> headers;
 	private HttpRequest req;
 	private CookieHandler ch;
@@ -18,7 +16,6 @@ public class HttpResponse {
 	
 	public HttpResponse(HttpRequest req) {
 		this.req = req;
-		response = new StringBuilder();
 		headers = new ArrayList<String>();
 		
 		switch(req.getMethod()) {
@@ -45,7 +42,7 @@ public class HttpResponse {
 		headers.add("Connection: close");
 		headers.add("Server: MultiThreadedServer");
 		headers.add("Cache-Control: public,max-age=10");
-		CookieHandler ch = new CookieHandler();
+		ch = new CookieHandler();
 		synchronized(ch) {
 			if(req.hasCookie())
 				ch.handle(req.getCookieID());

@@ -20,7 +20,7 @@ public class HttpRequest {
 	private static int counter = 1;
 
 	public HttpRequest(InputStream is) throws IOException {
-		BufferedReader in = new BufferedReader(new InputStreamReader(is));
+		in = new BufferedReader(new InputStreamReader(is));
 		headers = new HashMap<String, String>();
 		
 		String line = in.readLine();
