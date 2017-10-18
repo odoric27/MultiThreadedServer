@@ -32,7 +32,7 @@ public class RequestHandler implements Runnable {
 			resp.write(sock.getOutputStream());
 			sock.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Error: " + e.getMessage());
 		}
 	}
 }

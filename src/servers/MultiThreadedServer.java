@@ -32,8 +32,10 @@ public class MultiThreadedServer {
 			openSocket();
 			System.out.println("Server is running on localhost: " + this.serverPort);
 			while(!this.socket.isClosed()) {
+				System.out.println("Waiting for connection...");
 				Socket client = socket.accept();
 				System.out.println("Connection accepted from " + client.getInetAddress());
+				System.out.println("Spinning up new thread...");
 				threadPool.execute(new RequestHandler(client));
 			}
 		}

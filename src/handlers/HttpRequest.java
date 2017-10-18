@@ -41,6 +41,10 @@ public class HttpRequest {
 	}
 		
 	private void parseRequest(String line) {
+		if(line == null) {
+			method = "UNKNOWN";
+			return;
+		}
 		String[] temp = line.split(" ");
 		method = temp[0];
 		path = temp[1];

@@ -12,7 +12,6 @@ fi
 javac -d bin @sources.txt
 
 # start server
-cd bin && java servers.MultiThreadedServer
+java -cp bin servers.MultiThreadedServer
 
-cd ..
 echo "Program ended."
